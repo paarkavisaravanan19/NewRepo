@@ -2,6 +2,7 @@
 using System;
 using System.Data.SqlClient;
 using System.Data;
+using Microsoft.VisualBasic;
 
 namespace Week3Assessment
 {
@@ -17,96 +18,191 @@ namespace Week3Assessment
         {
             Console.WriteLine("1. Add Sports: ");
             Console.WriteLine("2. Add ScoreBoard and Display: ");
-            int CaseNumber = int.Parse(Console.ReadLine());
-            switch (CaseNumber)
+            Console.WriteLine("3. Add Tournament Names ");
+            Console.WriteLine("4. Remove sports");
+            Console.WriteLine("5. Tornament Deletion ");
+            Console.WriteLine("6. Edit scoreboard ");
+            Console.WriteLine("7. Remove player ");
+            Console.WriteLine("****************************************");
+            string CONN_STRING = "Data Source=DESKTOP-2ESDHDD;Initial Catalog= CollegeTournamentDetails;Integrated Security=True;Encrypt=False;";
+            SqlConnection con = new SqlConnection(CONN_STRING);
+            string option = "";
+            do
             {
-                case 1:
-                    Console.WriteLine("enter the sportsid to be added!");
-                    int SportsID = Convert.ToInt32(Console.ReadLine());
-                    Console.WriteLine("enter the sports name");
-                    string name = Console.ReadLine();
-                    string CONN_STRING = "Data Source=DESKTOP-2ESDHDD;Initial Catalog= CollegeTournamentDetails;Integrated Security=True;Encrypt=False;";
-                    SqlConnection con = new SqlConnection(CONN_STRING);
-                    con.Open();
-                    SqlCommand cmd = con.CreateCommand();
-                    cmd.CommandText = $"insert into SportDetails values({SportsID},'{name}')" +
-                                      $"select * from SportDetails";
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    Console.WriteLine("SportsID    SportsName");
-                    while (reader.Read())
-                    {
-                        Console.WriteLine($"{reader.GetInt32(0)}      {reader.GetString(1)}");
-                    }
-                    reader.Close();
-                    con.Close();
+                Console.WriteLine("enter a number to proceed");
+                int CaseNumber = int.Parse(Console.ReadLine());
+                switch (CaseNumber)
+                {
+                    case 1:
+                        Console.WriteLine("***********Adding Sports Funtionality : ***************");
+                        Console.WriteLine("enter the sports ID to be added!");
+                        int SportsID = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine("enter the sports name");
+                        string name = Console.ReadLine();
+                        con.Open();
+                        SqlCommand cmdCase1 = new SqlCommand("InsertionSportAndTournament", con);
+                        cmdCase1.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmdCase1.Parameters.Add("@SportsID", SqlDbType.Int).Value = SportsID;
+                        cmdCase1.Parameters.Add("@SportsName", SqlDbType.Text).Value = name;
+                        SqlDataReader readerCase1 = cmdCase1.ExecuteReader();
+                        Console.WriteLine("=================Table of sports details content==========");
+                        while (readerCase1.Read())
+                        {
+                            Console.WriteLine($"{readerCase1.GetInt32(0)}      {readerCase1.GetString(1)}");
+                        }
+                        readerCase1.Close();
+                        Console.WriteLine($"{SportsID} and {name} has been added");
+                        con.Close();
+                        break;
+                    case 2:
+                        con.Open();
+                        Console.WriteLine("============Adding ScoreBoard and Display:========= ");
+                        Console.WriteLine("View ScoreBoard");
+                        Console.WriteLine("==============================");
+                        SqlCommand cmdCase2 = con.CreateCommand();
+                        cmdCase2.CommandText = $"select * from ScoreBoardDetails;";
+                        Console.WriteLine("*****************table content of ScoreboardDetails****************");
+                        SqlDataReader readerCase2 = cmdCase2.ExecuteReader();
+                        while (readerCase2.Read())
+                        {
 
-                    break;
-                case 2:
-                    Console.WriteLine("View ScoreBoard");
-                    Console.WriteLine("==============================");
-                    string CONN_STRING1 = "Data Source=DESKTOP-2ESDHDD;Initial Catalog= CollegeTournamentDetails;Integrated Security=True;Encrypt=False;";
-                    SqlConnection con1 = new SqlConnection(CONN_STRING1);
-                    con1.Open();
-                    SqlCommand cmd1 = con1.CreateCommand();
-                    cmd1.CommandText =$"select * from ScoreBoardDetails;";
-                    Console.WriteLine("ID || SportsName                                 score||TeamHead");
-                    SqlDataReader reader1 = cmd1.ExecuteReader();
-                    while (reader1.Read())
-                    {
-                       
-                        Console.WriteLine($"{reader1.GetInt32(0)}||{reader1.GetString(1)}{reader1.GetInt32(2)}|| {reader1.GetString(3)}");
-                    }
-                    reader1.Close();
-                    con1.Close();
-                    break;
-                case 3:
-                    string CONN_STRING2 = "Data Source=DESKTOP-2ESDHDD;Initial Catalog= CollegeTournamentDetails;Integrated Security=True;Encrypt=False;";
-                    SqlConnection con2 = new SqlConnection(CONN_STRING2);
-                    con2.Open();
-                    SqlCommand cmd2 = con2.CreateCommand();
-                    cmd2.CommandText = $"select * from SportDetails";
-                    SqlDataReader reader2 = cmd2.ExecuteReader();
-                    Console.WriteLine("SportsID    SportsName");
-                    while (reader2.Read())
-                    {
-                        Console.WriteLine($"{reader2.GetInt32(0)}      {reader2.GetString(1)}");
-                    }
-                    reader2.Close();
-                    int sportsID = int.Parse(Console.ReadLine());
-                    string TournamentName = Console.ReadLine();
-                    SqlCommand cmd3 = new SqlCommand("TournamentUpdateDetails", con2);
-                    cmd3.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd3.Parameters.Add("@SportsID", SqlDbType.Int).Value = sportsID;
-                    cmd3.Parameters.Add("@tournamentTitle", SqlDbType.Text).Value = TournamentName;
-                    SqlDataReader reader3 = cmd3.ExecuteReader();
-                    while (reader3.Read())
-                    {
-                        Console.WriteLine($"{reader3.GetInt32(0)}      {reader3.GetString(1)}       {reader3.GetString(2)}");
-                    }
-                    reader3.Close();
-                    Console.WriteLine("Tournament Table Updated");
-                    con2.Close();
+                            Console.WriteLine($"{readerCase2.GetInt32(0)}||{readerCase2.GetString(1)}{readerCase2.GetInt32(2)}|| {readerCase2.GetString(3)}");
+                        }
+                        readerCase2.Close();
+                        con.Close();
+                        break;
+                    case 3:
+                        con.Open();
+                        Console.WriteLine("=================Adding Tournament Names================");
+                        SqlCommand cmdCase3 = con.CreateCommand();
+                        cmdCase3.CommandText = $"select * from SportDetails";
+                        SqlDataReader readerCase3 = cmdCase3.ExecuteReader();
+                        Console.WriteLine("**************SportsDetails Content**************");
+                        while (readerCase3.Read())
+                        {
+                            Console.WriteLine($"{readerCase3.GetInt32(0)}      {readerCase3.GetString(1)}");
+                        }
+                        readerCase3.Close();
+                        Console.WriteLine("Enter a sports ID to add Tournament ");
+                        int sportsID = int.Parse(Console.ReadLine());
+                        Console.WriteLine("Enter a sportsName to add Tournament ");
+                        string Sname = Console.ReadLine();
+                        Console.WriteLine("Enter a TournamentName to be addded");
+                        string TournamentName = Console.ReadLine();
+                        SqlCommand cmdCase3Update = new SqlCommand("TournamentUpdateDetails", con);
+                        cmdCase3Update.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmdCase3Update.Parameters.Add("@SportsID", SqlDbType.Int).Value = sportsID;
+                        cmdCase3Update.Parameters.Add("@tournamentTitle", SqlDbType.Text).Value = TournamentName;
+                        SqlDataReader readerCase3Update = cmdCase3Update.ExecuteReader();
+                        Console.WriteLine("*************Tournament Details Content************");
+                        while (readerCase3Update.Read())
+                        {
+                            Console.WriteLine($"{readerCase3Update.GetInt32(0)}      {readerCase3Update.GetString(1)}       {readerCase3Update.GetString(2)}");
+                        }
+                        readerCase3Update.Close();
+                        Console.WriteLine("Tournament Table Updated");
+                        SqlCommand cmdCase3UpdateScoreBoard = new SqlCommand("InsertionScoreAndTournament", con);
+                        cmdCase3UpdateScoreBoard.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmdCase3UpdateScoreBoard.Parameters.Add("@SportsID", SqlDbType.Int).Value = sportsID;
+                        cmdCase3UpdateScoreBoard.Parameters.Add("@SportsName", SqlDbType.Text).Value = Sname;
+                        cmdCase3UpdateScoreBoard.Parameters.Add("@TournamentName", SqlDbType.Text).Value = TournamentName;
+                        con.Close();
+                        break;
+                    case 4:
+                        con.Open();
+                        Console.WriteLine("==================Remove sports================");
+                        Console.WriteLine("enter id to delete the sports");
+                        int sportsIDCase4 = int.Parse(Console.ReadLine());
+                        SqlCommand cmdCase4 = new SqlCommand("SportsDeletionDetails", con);
+                        cmdCase4.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmdCase4.Parameters.Add("@SportsID", SqlDbType.Int).Value = sportsIDCase4;
+                        SqlDataReader readerCase4 = cmdCase4.ExecuteReader();
+                        while (readerCase4.Read())
+                        {
+                            Console.WriteLine($"{readerCase4.GetInt32(0)}      {readerCase4.GetString(1)}   {readerCase4.GetString(2)}");
+                        }
+                        readerCase4.Close();
+                        con.Close();
+                        Console.WriteLine("It has been Deleted");
+                        break;
+                    case 5:
+                        con.Open();
+                        Console.WriteLine("==================Tornament Deletion===================== ");
+                        SqlCommand cmdCase5 = con.CreateCommand();
+                        cmdCase5.CommandText = $"select * from ScoreBoardDetails";
+                        SqlDataReader readerCase5 = cmdCase5.ExecuteReader();
 
-                    break;
-                case 4:
-                    string CONN_STRING3 = "Data Source=DESKTOP-2ESDHDD;Initial Catalog= CollegeTournamentDetails;Integrated Security=True;Encrypt=False;";
-                    SqlConnection con3 = new SqlConnection(CONN_STRING3);
-                    con3.Open();
-                    SqlCommand cmd5 = con3.CreateCommand();
-                    cmd5.CommandText = $"select * from TournamentDetails";
-                    SqlDataReader reader4 = cmd5.ExecuteReader();
-                    while (reader4.Read())
-                    {
-                        Console.WriteLine($"{reader4.GetInt32(0)}      {reader4.GetString(1)}       {reader4.GetString(2)}");
-                    }
-                    reader4.Close();
-                    con3.Close();
-                    break;
+                        while (readerCase5.Read())
+                        {
+                            Console.WriteLine($"{readerCase5.GetInt32(0)} {readerCase5.GetString(1)} {readerCase5.GetInt32(2)} {readerCase5.GetString(7)} ");
+                        }
+                        readerCase5.Close();
+                        Console.WriteLine("enter id to be deleted:");
+                        int sportsIDCase5 = int.Parse(Console.ReadLine());
+                        SqlCommand cmdCase5Delete = new SqlCommand("TournamentDeletion", con);
+                        cmdCase5Delete.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmdCase5Delete.Parameters.Add("@SportsID", SqlDbType.Int).Value = sportsIDCase5;
+                        SqlDataReader readerCase5Show = cmdCase5Delete.ExecuteReader();
+                        Console.WriteLine("============================Tournamet Details Table==============================");
+                        while (readerCase5Show.Read())
+                        {
+                            Console.WriteLine($"{readerCase5Show.GetInt32(0)}      {readerCase5Show.GetString(1)}   {readerCase5Show.GetString(2)}");
+                        }
+                        readerCase5Show.Close();
+                        con.Close();
+                        Console.WriteLine("It has been Deleted");
+                        
+                        break;
+                    case 6:
+                        con.Open();
+                        Console.WriteLine("==============Edit scoreboard================== ");
+                        Console.WriteLine("enter the sports id to edit the scoreboard: ");
+                        int S_ID = int.Parse(Console.ReadLine());
+                        Console.WriteLine("enter the score to be updated");
+                        int U_score = int.Parse(Console.ReadLine());
+                        SqlCommand cmdCase6 = new SqlCommand("UpdateScoreBoardDetails", con);
+                        cmdCase6.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmdCase6.Parameters.Add("@SportsID", SqlDbType.Int).Value = S_ID;
+                        cmdCase6.Parameters.Add("@Score", SqlDbType.Int).Value = U_score;
+                        Console.WriteLine("=========================Score Board Details============================");
+                        SqlDataReader readerCase6 = cmdCase6.ExecuteReader();
+                        while (readerCase6.Read())
+                        {
+                            Console.WriteLine($"{readerCase6.GetInt32(0)}      {readerCase6.GetString(1)}       {readerCase6.GetInt32(2)}");
+                        }
+                        readerCase6.Close();
+                        con.Close();
 
+                        break;
+                    case 7:
+                        con.Open();
+                        Console.WriteLine("=============Remove player==============");
+                        Console.WriteLine("enter the sports id for disqualifying the player");
+                        int SportID = int.Parse(Console.ReadLine());
+                        SqlCommand cmdCase7 = con.CreateCommand();
+                        cmdCase7.CommandText = $"update ScoreBoardDetails set TeamPlayer1 = 'disqualified' where SportsID = {SportID}" +
+                            $"select * from ScoreBoardDetails";
+                        SqlDataReader reader = cmdCase7.ExecuteReader();
+                        Console.WriteLine("==============================Score Board Details==============================");
+                        while (reader.Read())
+                        {
+                            Console.WriteLine($"{reader.GetInt32(0)}      {reader.GetString(1)}      {reader.GetString(4)}");
+                        }
+                        reader.Close();
+                        con.Close();
+                        break;
 
+                }
+                Console.WriteLine("do you want to proceed ! yes or no");
+                option = Console.ReadLine();
+            } while (string.Equals("yes", option));
 
-
+            if (string.Equals("no", option))
+            {
+                Console.WriteLine("ENDS!");
+                Console.WriteLine("====================================");
             }
+
         }
     }
 }
