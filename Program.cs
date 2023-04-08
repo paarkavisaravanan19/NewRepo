@@ -11,8 +11,8 @@ namespace Week3Assessment
 
         public static void Main(string[] args)
         {
+            Console.WriteLine("College Sports Management System");
             Display();
-            
         }
         public static void Display()
         {
@@ -23,6 +23,8 @@ namespace Week3Assessment
             Console.WriteLine("5. Tornament Deletion ");
             Console.WriteLine("6. Edit scoreboard ");
             Console.WriteLine("7. Remove player ");
+            Console.WriteLine("8. Registeration Individual");
+            Console.WriteLine("9. Registeration Group ");
             Console.WriteLine("****************************************");
             string CONN_STRING = "Data Source=DESKTOP-2ESDHDD;Initial Catalog= CollegeTournamentDetails;Integrated Security=True;Encrypt=False;";
             SqlConnection con = new SqlConnection(CONN_STRING);
@@ -127,14 +129,14 @@ namespace Week3Assessment
                         break;
                     case 5:
                         con.Open();
-                        Console.WriteLine("==================Tornament Deletion===================== ");
+                        Console.WriteLine("==================Tornament Details===================== ");
                         SqlCommand cmdCase5 = con.CreateCommand();
                         cmdCase5.CommandText = $"select * from ScoreBoardDetails";
                         SqlDataReader readerCase5 = cmdCase5.ExecuteReader();
 
                         while (readerCase5.Read())
                         {
-                            Console.WriteLine($"{readerCase5.GetInt32(0)} {readerCase5.GetString(1)} {readerCase5.GetInt32(2)} {readerCase5.GetString(7)} ");
+                            Console.WriteLine($"{readerCase5.GetInt32(0)} {readerCase5.GetString(1)} {readerCase5.GetInt32(2)} {readerCase5.GetString(3)} ");
                         }
                         readerCase5.Close();
                         Console.WriteLine("enter id to be deleted:");
@@ -180,15 +182,81 @@ namespace Week3Assessment
                         Console.WriteLine("enter the sports id for disqualifying the player");
                         int SportID = int.Parse(Console.ReadLine());
                         SqlCommand cmdCase7 = con.CreateCommand();
-                        cmdCase7.CommandText = $"update ScoreBoardDetails set TeamPlayer1 = 'disqualified' where SportsID = {SportID}" +
-                            $"select * from ScoreBoardDetails";
+                        cmdCase7.CommandText = $"update GroupPlayerTournamentDetails set TeamPlayer1 = 'disqualified' where SportsID = {SportID}" +
+                            $"select * from GroupPlayerTournamentDetails";
                         SqlDataReader reader = cmdCase7.ExecuteReader();
                         Console.WriteLine("==============================Score Board Details==============================");
                         while (reader.Read())
                         {
-                            Console.WriteLine($"{reader.GetInt32(0)}      {reader.GetString(1)}      {reader.GetString(4)}");
+                            Console.WriteLine($"{reader.GetInt32(0)}      {reader.GetString(1)}   {reader.GetString(4)}");
                         }
                         reader.Close();
+                        con.Close();
+                        break;
+                    case 8:
+                        con.Open();
+                        SqlCommand cmdCase8= con.CreateCommand();
+                        cmdCase8.CommandText = $"select * from IndividualTournamentDetails";
+                        SqlDataReader readerCase8 = cmdCase8.ExecuteReader();
+                        Console.WriteLine("**************Individual Tournament Details Content**************");
+                        while (readerCase8.Read())
+                        {
+                            Console.WriteLine($"{readerCase8.GetInt32(0)}      {readerCase8.GetString(1)}   {readerCase8.GetString(2)}   {readerCase8.GetString(3)}");
+                        }
+                        readerCase8.Close();
+                        Console.WriteLine("Enter sports id to which you want to register: ");
+                        int SportsID_Ind = int.Parse(Console.ReadLine());
+                        Console.WriteLine("Enter your Name for Registeration: ");
+                        string PlayerName = Console.ReadLine();
+                        SqlCommand cmdCase8Update = new SqlCommand("RegisterationIndividual", con);
+                        cmdCase8Update.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmdCase8Update.Parameters.Add("@SportsID", SqlDbType.Int).Value = SportsID_Ind;
+                        cmdCase8Update.Parameters.Add("@PlayerName", SqlDbType.Text).Value = PlayerName;
+                        Console.WriteLine("*************Individual  Details Content************");
+                        SqlDataReader readerCase8Update = cmdCase8Update.ExecuteReader();
+                        while (readerCase8Update.Read())
+                        {
+                            Console.WriteLine($"{readerCase8Update.GetInt32(0)}  {readerCase8Update.GetString(1)}  {readerCase8Update.GetString(2)}  {readerCase8Update.GetString(3)}");
+                        }
+                        readerCase8Update.Close();
+                        con.Close();
+                        break;
+                    case 9:
+                        con.Open();
+                        SqlCommand cmdCase9 = con.CreateCommand();
+                        cmdCase9.CommandText = $"select * from GroupPlayerTournamentDetails";
+                        SqlDataReader readerCase9 = cmdCase9.ExecuteReader();
+                        Console.WriteLine("**************Individual Tournament Details Content**************");
+                        while (readerCase9.Read())
+                        {
+                            Console.WriteLine($"{readerCase9.GetInt32(0)}      {readerCase9.GetString(1)} {readerCase9.GetString(2)}{readerCase9.GetString(3)}{readerCase9.GetString(4)}{readerCase9.GetString(5)}{readerCase9.GetString(6)}   ");
+                        }
+                        readerCase9.Close();
+                        Console.WriteLine("Enter sports id to which you want to register: ");
+                        int SportsID_grp = int.Parse(Console.ReadLine());
+                        Console.WriteLine("Enter team head Name for Registeration: ");
+                        string TeamHeadPlayerName = Console.ReadLine();
+                        Console.WriteLine("Enter team player 1 for Registeration: ");
+                        string PlayerName1 = Console.ReadLine();
+                        Console.WriteLine("Enter team player 2 for Registeration: ");
+                        string PlayerName2 = Console.ReadLine();
+                        Console.WriteLine("Enter team player 3 for Registeration: ");
+                        string PlayerName3 = Console.ReadLine();
+                        SqlCommand cmdCase9Update = new SqlCommand("RegisterationGroup", con);
+                        cmdCase9Update.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmdCase9Update.Parameters.Add("@SportsID", SqlDbType.Int).Value = SportsID_grp;
+                        cmdCase9Update.Parameters.Add("@TeamHead", SqlDbType.Text).Value = TeamHeadPlayerName;
+                        cmdCase9Update.Parameters.Add("@TeamPlayer1", SqlDbType.Text).Value = PlayerName1;
+                        cmdCase9Update.Parameters.Add("@TeamPlayer2", SqlDbType.Text).Value = PlayerName2;
+                        cmdCase9Update.Parameters.Add("@TeamPlayer3", SqlDbType.Text).Value = PlayerName3;
+
+                        Console.WriteLine("*************grp Details Content************");
+                        SqlDataReader readerCase9Update = cmdCase9Update.ExecuteReader();
+                        while (readerCase9Update.Read())
+                        {
+                            Console.WriteLine($"{readerCase9Update.GetInt32(0)}  {readerCase9Update.GetString(1)}  {readerCase9Update.GetString(2)}{readerCase9Update.GetString(3)}{readerCase9Update.GetString(4)}{readerCase9Update.GetString(5)}{readerCase9Update.GetString(6)}");
+                        }
+                        readerCase9Update.Close();
                         con.Close();
                         break;
 
